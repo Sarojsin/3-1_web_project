@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Result - Django Lab{% endblock %}
+
+{% block content %}
+<div class="result-page">
+    <h1>Test Completed!</h1>
+    
+    <div class="result-card {% if result.is_passed %}passed{% else %}failed{% endif %}">
+        <div class="result-header">
+            <h2>{{ result.test.title }}</h2>
+        </div>
+        <div class="result-body">
+            <div class="score-display">
+                <p class="score">{{ result.score }}</p>
+                <p class="total">/ {{ result.total_points }} points</p>
+            </div>
+            <div class="percentage">
+                <p>{{ result.percentage|floatformat:2 }}%</p>
+            </div>
+            <div class="status">
+                <p class="{% if result.is_passed %}passed-text{% else %}failed-text{% endif %}">
+                    {{ result.is_passed|yesno:"PASSED,FAILED" }}
+                </p>
+            </div>
+        </div>
+        <div class="result-footer">
+            <p>Completed on: {{ result.completed_at }}</p>
+        </div>
+    </div>
+    
+    <div class="result-actions">
+        <a href="{% url 'student_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
