@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Test - {{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="take-test">
+    <h1>{{ test.title }}</h1>
+    <p>{{ test.description }}</p>
+    <p><strong>Duration:</strong> {{ test.duration_minutes }} minutes</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for question in questions %}
+        <div class="question-card">
+            <p class="question-text">{{ forloop.counter }}. {{ question.text }}</p>
+            <input type="hidden" name="question_{{ question.id }}" value="">
+            <div class="answer-options">
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="A"> Option A
+                </label>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="B"> Option B
+                </label>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="C"> Option C
+                </label>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="D"> Option D
+                </label>
+            </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit Test</button>
+    </form>
+</div>
+{% endblock %}
