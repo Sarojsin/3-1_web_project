@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Question - Django Lab{% endblock %}
+
+{% block content %}
+<div class="edit-question">
+    <h1>Edit Question in: {{ test.title }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="question_text">Question Text</label>
+            <textarea id="question_text" name="question_text" rows="3" required>{{ question.text }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="question_type">Question Type</label>
+            <select id="question_type" name="question_type" onchange="toggleOptions()">
+                <option value="multiple_choice" {% if question.question_type == 'multiple_choice' %}selected{% endif %}>Multiple Choice</option>
+                <option value="true_false" {% if question.question_type == 'true_false' %}selected{% endif %}>True/False</option>
+                <option value="short_answer" {% if question.question_type == 'short_answer' %}selected{% endif %}>Short Answer</option>
+            </select>
+        </div>
+
+        <div id="multiple_choice_options" class="options-section">
+            <h3>Multiple Choice Options</h3>
+            <p class="help-text">Enter the options and mark the correct answer.</p>
+
+            <div class="option-row">
+                <input type="text" name="option_a" placeholder="Option A" class="option-input" value="{{ options_map.1 }}">
+                <label class="correct-answer">
+                    <input type="radio" name="correct_option" value="a" {% if correct_option == 'a' %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+            <div class="option-row">
+                <input type="text" name="option_b" placeholder="Option B" class="option-input" value="{{ options_map.2 }}">
+                <label class="correct-answer">
+                    <input type="radio" name="correct_option" value="b" {% if correct_option == 'b' %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+            <div class="option-row">
+                <input type="text" name="option_c" placeholder="Option C" class="option-input" value="{{ options_map.3 }}">
+                <label class="correct-answer">
+                    <input type="radio" name="correct_option" value="c" {% if correct_option == 'c' %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+            <div class="option-row">
+                <input type="text" name="option_d" placeholder="Option D" class="option-input" value="{{ options_map.4 }}">
+                <label class="correct-answer">
+                    <input type="radio" name="correct_option" value="d" {% if correct_option == 'd' %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+        </div>
+
+        <div id="true_false_options" class="options-section" style="display: none;">
+            <h3>True/False Options</h3>
+            <p class="help-text">Mark the correct answer.</p>
+
+            <div class="option-row">
+                <span class="option-text">True</span>
+                <label class="correct-answer">
+                    <input type="checkbox" name="correct_true" {% if correct_true %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+            <div class="option-row">
+                <span class="option-text">False</span>
+                <label class="correct-answer">
+                    <input type="checkbox" name="correct_false" {% if correct_false %}checked{% endif %}> Correct Answer
+                </label>
+            </div>
+        </div>
+
+        <div id="short_answer_info" class="options-section" style="display: none;">
+            <p class="help-text">For short answer questions, students will type their answer. You'll need to grade these manually.</p>
+        </div>
+
+        <div class="form-group">
+            <label for="points">Points</label>
+            <input type="number" id="points" name="points" value="{{ question.points }}" min="1">
+        </div>
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{% url 'view_test_questions' test.id %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleOptions() {
+    var questionType = document.getElementById('question_type').value;
+
+    document.getElementById('multiple_choice_options').style.display =
+        questionType === 'multiple_choice' ? 'block' : 'none';
+    document.getElementById('true_false_options').style.display =
+        questionType === 'true_false' ? 'block' : 'none';
+    document.getElementById('short_answer_info').style.display =
+        questionType === 'short_answer' ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    toggleOptions();
+});
+</script>
+
+<style>
+.options-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    border: 1px solid #dee2e6;
+}
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+.option-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+.option-text {
+    font-weight: bold;
+    min-width: 100px;
+}
+.correct-answer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+.help-text {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+</style>
+{% endblock %}
