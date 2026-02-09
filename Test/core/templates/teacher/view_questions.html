@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Questions - {{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="view-questions">
+    <h1>Questions in: {{ test.title }}</h1>
+    
+    <div class="test-info">
+        <p><strong>Total Questions:</strong> {{ questions.count }}</p>
+        <p><strong>Status:</strong> {% if test.is_published %}<span class="published">Published</span>{% else %}<span class="draft">Draft</span>{% endif %}</p>
+        {% if not test.is_published %}
+        <form method="post" action="{% url 'publish_test' test.id %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Publish Test</button>
+        </form>
+        {% endif %}
+        <a href="{% url 'add_question' test.id %}" class="btn btn-primary">Add More Questions</a>
+    </div>
+    
+    <div class="questions-list">
+        {% for question in questions %}
+        <div class="question-card">
+            <div class="question-header">
+                <span class="question-number">Question {{ forloop.counter }}</span>
+                <span class="question-type">{{ question.get_question_type_display }}</span>
+                <span class="question-points">{{ question.points }} point{{ question.points|pluralize }}</span>
+                <a href="{% url 'edit_question' test.id question.id %}" class="btn btn-sm btn-secondary">Edit</a>
+            </div>
+            
+            <p class="question-text">{{ question.text }}</p>
+            
+            {% if question.question_type == 'multiple_choice' %}
+            <div class="options-list">
+                <h4>Options:</h4>
+                {% for option in question.options.all %}
+                <div class="option-item {% if option.is_correct %}correct-option{% endif %}">
+                    <span class="option-letter">{{ forloop.counter }}.</span>
+                    <span class="option-text">{{ option.option_text }}</span>
+                    {% if option.is_correct %}
+                    <span class="correct-badge">✓ Correct</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% elif question.question_type == 'true_false' %}
+            <div class="options-list">
+                <h4>Options:</h4>
+                {% for option in question.options.all %}
+                <div class="option-item {% if option.is_correct %}correct-option{% endif %}">
+                    <span class="option-text">{{ option.option_text }}</span>
+                    {% if option.is_correct %}
+                    <span class="correct-badge">✓ Correct</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% elif question.question_type == 'short_answer' %}
+            <div class="short-answer-info">
+                <p>Short answer question - requires manual grading.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="no-questions">
+            <p>No questions have been added to this test yet.</p>
+            <a href="{% url 'add_question' test.id %}" class="btn btn-primary">Add First Question</a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="actions">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+.test-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.published {
+    color: #28a745;
+    font-weight: bold;
+}
+.draft {
+    color: #dc3545;
+    font-weight: bold;
+}
+.question-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+.question-header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+.question-number {
+    font-weight: bold;
+    color: #495057;
+}
+.question-type {
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+.question-text {
+    font-size: 1.1em;
+    font-weight: 500;
+    margin: 10px 0;
+}
+.options-list {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+.option-item {
+    padding: 8px 15px;
+    margin: 5px 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.correct-option {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+.option-letter {
+    font-weight: bold;
+    color: #495057;
+}
+.correct-badge {
+    color: #28a745;
+    font-weight: bold;
+    margin-left: auto;
+}
+.short-answer-info {
+    margin-top: 15px;
+    padding: 10px;
+    background: #fff3cd;
+    border-radius: 4px;
+    color: #856404;
+}
+.actions {
+    margin-top: 20px;
+}
+.no-questions {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+</style>
+{% endblock %}
